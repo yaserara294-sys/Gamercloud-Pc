@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    name: Compilar APK Android
     runs-on: ubuntu-latest
 
     steps:
@@ -22,25 +23,31 @@ jobs:
 
       - name: Preparar Android
         uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
 
       - name: Instalar SDK Android
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+        run: |
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Descargar Gradle
         run: |
           wget https://services.gradle.org/distributions/gradle-8.9-bin.zip
-          unzip -q gradle-8.9-bin.zip
+          unzip gradle-8.9-bin.zip
 
-      - name: Extraer proyecto
+      - name: Extraer proyecto Gamer Cloud PC
         run: |
-          unzip -q GamerCloudPC.zip -d extraido
-          cp -R extraido/GamerCloudPC/. .
+          mkdir -p extraido
+          unzip -o GamerCloudPC.zip -d extraido
+          cp -r extraido/GamerCloudPC/. .
 
       - name: Compilar APK
-        run: ./gradle-8.9/bin/gradle assembleDebug
+        run: |
+          ./gradle-8.9/bin/gradle assembleDebug
 
       - name: Guardar APK
         uses: actions/upload-artifact@v4
         with:
           name: GamerCloudPC-APK
           path: app/build/outputs/apk/debug/app-debug.apk
+
